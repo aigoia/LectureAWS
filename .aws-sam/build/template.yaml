@@ -11,6 +11,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: HelloWorld
       CodeUri: HelloWorldFunction
       Handler: HelloWorld::HelloWorld.Function::FunctionHandler
       Runtime: dotnet6
