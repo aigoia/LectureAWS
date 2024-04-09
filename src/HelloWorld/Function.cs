@@ -77,7 +77,7 @@ namespace HelloWorld
                 
                 return new APIGatewayProxyResponse
                 {
-                    Body = $"Error occurred: post is not made yet",
+                    Body = $"Error occurred: Post is not made yet",
                     StatusCode = 500,
                     Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
                 };
