@@ -30,7 +30,7 @@ namespace HelloWorld
             return massage.Replace("\n","");
         }
 
-        public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyResponse eventPayload, ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest eventPayload, ILambdaContext context)
         {
             if (string.IsNullOrEmpty(eventPayload.Body))
             {
@@ -41,7 +41,6 @@ namespace HelloWorld
                     Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
                 };
             }
-
             try
             {
                 var eventToJob = JsonSerializer.Deserialize<Job>(eventPayload.Body);
@@ -55,21 +54,31 @@ namespace HelloWorld
                         Headers = new Dictionary<string, string> { { "Content-Type", "text/plain" } }
                     };
                 }
-        
-                var dynamoContext = new DynamoDBContext(new AmazonDynamoDBClient());
-                var jobContext = await dynamoContext.LoadAsync<Job>(eventToJob.Title);
-        
-                var location = await GetCallingIp();
-                var body = new Dictionary<string, string>
-                {
-                    { "Job", jobContext.Title},
-                    { "Job description", jobContext.Description}
-                };
 
+                if (eventPayload.RequestContext.HttpMethod.ToUpper() == "Get")
+                {
+                    var dynamoContext = new DynamoDBContext(new AmazonDynamoDBClient());
+                    var jobContext = await dynamoContext.LoadAsync<Job>(eventToJob.Title);
+        
+                    var location = await GetCallingIp();
+                    var body = new Dictionary<string, string>
+                    {
+                        { "Job", jobContext.Title},
+                        { "Job description", jobContext.Description}
+                    };
+
+                    return new APIGatewayProxyResponse
+                    {
+                        Body = JsonSerializer.Serialize(body),
+                        StatusCode = 200,
+                        Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                    };
+                }
+                
                 return new APIGatewayProxyResponse
                 {
-                    Body = JsonSerializer.Serialize(body),
-                    StatusCode = 200,
+                    Body = $"Error occurred: post is not made yet",
+                    StatusCode = 500,
                     Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
                 };
             }
