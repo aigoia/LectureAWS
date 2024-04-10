@@ -55,7 +55,7 @@ namespace HelloWorld
                     };
                 }
 
-                if (eventPayload.RequestContext.HttpMethod.ToUpper() == "Get")
+                if (eventPayload.RequestContext.HttpMethod.ToUpper() == "GET")
                 {
                     var dynamoContext = new DynamoDBContext(new AmazonDynamoDBClient());
                     var jobContext = await dynamoContext.LoadAsync<Job>(eventToJob.Title);
@@ -77,7 +77,7 @@ namespace HelloWorld
                 
                 return new APIGatewayProxyResponse
                 {
-                    Body = $"Error occurred: Post is not made yet",
+                    Body = $"Error occurred: POST is not made yet",
                     StatusCode = 500,
                     Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
                 };
